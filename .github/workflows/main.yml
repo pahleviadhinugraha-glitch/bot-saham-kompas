@@ -1,0 +1,30 @@
+name: Scan Saham Kompas100 Harian
+
+on:
+  schedule:
+    # Berjalan Senin-Jumat jam 09:15 UTC (Jam 16:15 WIB - Pas setelah market tutup)
+    - cron: '15 9 * * 1-5'
+  workflow_dispatch: # Supaya Anda bisa klik "Run" manual kapan saja untuk tes
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil Kode dari Repo
+        uses: actions/checkout@v3
+
+      - name: Siapkan Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Instal Bahan (Library)
+        run: |
+          pip install yfinance pandas requests lxml
+
+      - name: Jalankan Mesin Screener
+        env:
+          # Mengambil kunci rahasia dari Langkah 2
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python ihsg_bot.py
